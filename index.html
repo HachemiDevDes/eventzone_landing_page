@@ -1,0 +1,3215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Eventzone — The Algerian Event Management Platform</title>
+  <meta name="description"
+    content="From registration to badge in hand. The event management solution built for Algeria." />
+  <link rel="icon" href="https://i.imgur.com/jFDrQbM.png" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,700;12..96,800&family=Outfit:wght@300;400;500;600&display=swap"
+    rel="stylesheet" />
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    :root {
+      --bg: #07090f;
+      --bg2: #0d1117;
+      --bg3: #111820;
+      --border: rgba(255, 255, 255, 0.07);
+      --border-hover: rgba(255, 255, 255, 0.15);
+      --orange: #2B7FFF;
+      --orange-glow: rgba(43, 127, 255, 0.25);
+      --blue: #60A5FA;
+      --text: #eef0f4;
+      --text2: rgba(238, 240, 244, 0.5);
+      --text3: rgba(238, 240, 244, 0.28);
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased
+    }
+
+    /* NOISE TEXTURE */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.025;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* TYPOGRAPHY */
+    .display {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: clamp(3.2rem, 6.5vw, 6rem);
+      font-weight: 800;
+      line-height: 1.0;
+      letter-spacing: -0.03em
+    }
+
+    .h2 {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: clamp(2.2rem, 4vw, 3.8rem);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.025em
+    }
+
+    .h3 {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.015em
+    }
+
+    .body-lg {
+      font-size: 1.1rem;
+      line-height: 1.75;
+      color: var(--text2);
+      font-weight: 300
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 1.5rem 0;
+      transition: all .4s
+    }
+
+    nav.scrolled {
+      background: rgba(7, 9, 15, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 0
+    }
+
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem
+    }
+
+    .nav-logo img {
+      height: 34px;
+      width: auto;
+      filter: none
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2.5rem;
+      list-style: none
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text2);
+      font-size: .9rem;
+      font-weight: 400;
+      transition: color .2s;
+      letter-spacing: .01em
+    }
+
+    .nav-links a:hover {
+      color: var(--text)
+    }
+
+    .nav-ctas {
+      display: flex;
+      align-items: center;
+      gap: .75rem
+    }
+
+    /* LANGUAGE DROPDOWN */
+    .lang-dropdown {
+      position: relative;
+    }
+    .lang-selected {
+      display: flex;
+      align-items: center;
+      gap: .45rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      padding: .4rem .85rem;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all .25s cubic-bezier(0.4,0,0.2,1);
+      font-family: 'Outfit', sans-serif;
+      font-size: .82rem;
+      font-weight: 500;
+      color: var(--text2);
+      user-select: none;
+    }
+    .lang-selected:hover {
+      border-color: var(--border-hover);
+      color: var(--text);
+    }
+    .lang-selected .lang-flag {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .lang-selected .lang-arrow {
+      font-size: .55rem;
+      margin-left: .15rem;
+      transition: transform .25s;
+      color: var(--text3);
+    }
+    .lang-dropdown.open .lang-selected {
+      border-color: var(--border-hover);
+    }
+    .lang-dropdown.open .lang-arrow {
+      transform: rotate(180deg);
+    }
+    .lang-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      min-width: 150px;
+      background: var(--bg2);
+      border: 1px solid var(--border-hover);
+      border-radius: var(--radius-sm);
+      padding: .35rem;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-6px);
+      transition: all .2s cubic-bezier(0.4,0,0.2,1);
+      z-index: 200;
+      box-shadow: 0 12px 32px rgba(0,0,0,.5);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+    .lang-dropdown.open .lang-menu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    .lang-option {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      padding: .55rem .75rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background .15s;
+      font-family: 'Outfit', sans-serif;
+      font-size: .85rem;
+      color: var(--text2);
+      background: none;
+      border: none;
+      width: 100%;
+      text-align: left;
+    }
+    .lang-option:hover {
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+    }
+    .lang-option.active {
+      background: rgba(43, 127, 255, 0.1);
+      color: var(--orange);
+    }
+    .lang-option .lang-flag {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .lang-option .lang-label {
+      flex: 1;
+    }
+    .lang-option .lang-check {
+      font-size: .75rem;
+      opacity: 0;
+    }
+    .lang-option.active .lang-check {
+      opacity: 1;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .65rem 1.4rem;
+      border-radius: 50px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 500;
+      font-size: .9rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all .25s;
+      border: none;
+      white-space: nowrap
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text2);
+      border: 1px solid var(--border)
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--border-hover);
+      color: var(--text)
+    }
+
+    .btn-orange {
+      background: var(--orange);
+      color: #fff;
+      box-shadow: 0 0 24px var(--orange-glow)
+    }
+
+    .btn-orange:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+      box-shadow: 0 0 36px rgba(43, 127, 255, .4)
+    }
+
+    .btn-orange:active {
+      transform: translateY(0)
+    }
+
+    .btn-lg {
+      padding: .85rem 2rem;
+      font-size: 1rem
+    }
+
+    .hamburger {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      flex-direction: column;
+      gap: 5px;
+      padding: 4px
+    }
+
+    .hamburger span {
+      display: block;
+      width: 22px;
+      height: 1.5px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: all .3s
+    }
+
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 99;
+      padding: 6rem 2.5rem 2.5rem;
+      flex-direction: column;
+      gap: 1rem
+    }
+
+    .mobile-menu.open {
+      display: flex
+    }
+
+    .mobile-menu a {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+      padding: .5rem 0;
+      border-bottom: 1px solid var(--border)
+    }
+
+    /* HERO */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 8rem 0 5rem;
+      position: relative;
+      overflow: hidden
+    }
+
+    .hero-blobs {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0
+    }
+
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: .35;
+      animation: blobMove 12s ease-in-out infinite alternate
+    }
+
+    .blob1 {
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(29, 110, 245, .4), transparent 70%);
+      top: -100px;
+      right: -100px;
+      animation-delay: 0s
+    }
+
+    .blob2 {
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(43, 127, 255, .3), transparent 70%);
+      bottom: -50px;
+      left: -100px;
+      animation-delay: -6s
+    }
+
+    @keyframes blobMove {
+      0% {
+        transform: translate(0, 0) scale(1)
+      }
+
+      100% {
+        transform: translate(40px, 30px) scale(1.1)
+      }
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2.5rem;
+      position: relative;
+      z-index: 1
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center
+    }
+
+    .hero-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: .6rem;
+      background: rgba(43, 127, 255, .1);
+      border: 1px solid rgba(43, 127, 255, .2);
+      color: var(--orange);
+      padding: .4rem 1rem;
+      border-radius: 50px;
+      font-size: .82rem;
+      font-weight: 500;
+      margin-bottom: 1.75rem;
+      letter-spacing: .02em
+    }
+
+    .kicker-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--orange);
+      box-shadow: 0 0 8px var(--orange);
+      animation: pulse 2s ease-in-out infinite
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1)
+      }
+
+      50% {
+        opacity: .5;
+        transform: scale(.8)
+      }
+    }
+
+    .hero-headline {
+      margin-bottom: 1.5rem
+    }
+
+    .hero-headline em {
+      font-style: normal;
+      color: var(--orange)
+    }
+
+    .hero-headline .line-stroke {
+      -webkit-text-stroke: 1.5px rgba(238, 240, 244, 0.4);
+      color: transparent
+    }
+
+    .hero-sub {
+      margin-bottom: 2.5rem;
+      max-width: 480px
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 2.5rem
+    }
+
+    .trust-row {
+      display: flex;
+      gap: 1.75rem;
+      flex-wrap: wrap
+    }
+
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      font-size: .84rem;
+      color: var(--text3)
+    }
+
+    .trust-check {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: rgba(52, 211, 153, .15);
+      border: 1px solid rgba(52, 211, 153, .3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0
+    }
+
+    .trust-check::after {
+      content: '✓';
+      font-size: 9px;
+      color: #34d399
+    }
+
+    /* HERO MOCKUP */
+    .mockup-wrap {
+      position: relative;
+      perspective: 1200px;
+    }
+
+    .mockup-glow {
+      position: absolute;
+      inset: -40px;
+      background: radial-gradient(ellipse at center, rgba(29, 110, 245, .15), transparent 70%);
+      pointer-events: none;
+      z-index: 0
+    }
+
+    .mockup {
+      background: var(--bg2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 1.5rem;
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 40px 80px rgba(0, 0, 0, .5);
+      transition: transform 0.15s ease-out;
+      transform-style: preserve-3d;
+    }
+
+    .mockup-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .mockup-dots {
+      display: flex;
+      gap: 6px
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%
+    }
+
+    .dot-r {
+      background: #ff5f56
+    }
+
+    .dot-y {
+      background: #ffbd2e
+    }
+
+    .dot-g {
+      background: #27c93f
+    }
+
+    .mockup-title {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: .9rem;
+      font-weight: 600;
+      color: var(--text2)
+    }
+
+    .live-pill {
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      background: rgba(52, 211, 153, .1);
+      border: 1px solid rgba(52, 211, 153, .2);
+      border-radius: 50px;
+      padding: .25rem .65rem;
+      font-size: .72rem;
+      color: #34d399;
+      font-weight: 500
+    }
+
+    .live-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #34d399;
+      animation: pulse 1.5s infinite
+    }
+
+    .m-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: .75rem;
+      margin-bottom: 1.25rem
+    }
+
+    .m-stat {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem
+    }
+
+    .m-stat-n {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      line-height: 1
+    }
+
+    .m-stat-n.o {
+      color: var(--orange)
+    }
+
+    .m-stat-n.b {
+      color: var(--blue)
+    }
+
+    .m-stat-l {
+      font-size: .72rem;
+      color: var(--text3);
+      margin-top: .3rem;
+      text-transform: uppercase;
+      letter-spacing: .06em
+    }
+
+    .m-bar-wrap {
+      margin-bottom: 1.25rem
+    }
+
+    .m-bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: .75rem;
+      color: var(--text3);
+      margin-bottom: .5rem
+    }
+
+    .m-bar {
+      height: 6px;
+      background: rgba(255, 255, 255, .06);
+      border-radius: 50px;
+      overflow: hidden
+    }
+
+    .m-bar-fill {
+      height: 100%;
+      border-radius: 50px;
+      background: linear-gradient(90deg, var(--blue), var(--orange));
+      width: 97%;
+      animation: barLoad 2s ease-out
+    }
+
+    @keyframes barLoad {
+      from {
+        width: 0
+      }
+
+      to {
+        width: 97%
+      }
+    }
+
+    .m-rows {
+      display: flex;
+      flex-direction: column;
+      gap: .5rem
+    }
+
+    .m-row {
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+      background: var(--bg3);
+      border-radius: 10px;
+      padding: .6rem .8rem;
+      border: 1px solid var(--border)
+    }
+
+    .m-av {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: .7rem;
+      font-weight: 700;
+      flex-shrink: 0
+    }
+
+    .m-av.blue {
+      background: rgba(96, 165, 250, .15);
+      color: var(--blue)
+    }
+
+    .m-av.orange {
+      background: rgba(43, 127, 255, .15);
+      color: var(--orange)
+    }
+
+    .m-row-name {
+      font-size: .8rem;
+      flex: 1;
+      color: var(--text2)
+    }
+
+    .m-pill {
+      font-size: .68rem;
+      padding: .2rem .55rem;
+      border-radius: 50px;
+      font-weight: 500
+    }
+
+    .mp-green {
+      background: rgba(52, 211, 153, .1);
+      color: #34d399;
+      border: 1px solid rgba(52, 211, 153, .2)
+    }
+
+    .mp-blue {
+      background: rgba(29, 110, 245, .1);
+      color: #93bbfa;
+      border: 1px solid rgba(29, 110, 245, .2)
+    }
+
+    .chip-float {
+      position: absolute;
+      background: var(--bg2);
+      border: 1px solid var(--border-hover);
+      border-radius: 12px;
+      padding: .55rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      font-size: .78rem;
+      font-weight: 500;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .4);
+      z-index: 2
+    }
+
+    .cf1 {
+      top: -18px;
+      right: 10%;
+      animation: floatY 3s ease-in-out infinite
+    }
+
+    .cf2 {
+      bottom: 20px;
+      left: -20px;
+      animation: floatY 3s ease-in-out infinite;
+      animation-delay: -1.5s
+    }
+
+    .cf-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0
+    }
+
+    .cfd-g {
+      background: #34d399;
+      box-shadow: 0 0 6px #34d399
+    }
+
+    .cfd-o {
+      background: var(--orange);
+      box-shadow: 0 0 6px var(--orange)
+    }
+
+    @keyframes floatY {
+
+      0%,
+      100% {
+        transform: translateY(0)
+      }
+
+      50% {
+        transform: translateY(-8px)
+      }
+    }
+
+    /* MARQUEE */
+    .marquee-section {
+      padding: 2rem 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+      background: var(--bg2)
+    }
+
+    .marquee-track {
+      display: flex;
+      gap: 3rem;
+      width: max-content;
+      animation: marquee 30s linear infinite
+    }
+
+    .marquee-track:hover {
+      animation-play-state: paused
+    }
+
+    .marquee-item {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      white-space: nowrap;
+      font-size: .85rem;
+      color: var(--text3);
+      font-weight: 400
+    }
+
+    .marquee-item strong {
+      color: var(--text2);
+      font-weight: 500
+    }
+
+    .marquee-sep {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--orange);
+      flex-shrink: 0
+    }
+
+    @keyframes marquee {
+      0% {
+        transform: translateX(0)
+      }
+
+      100% {
+        transform: translateX(-50%)
+      }
+    }
+
+    /* SECTIONS */
+    section {
+      padding: 7rem 0
+    }
+
+    .section-tag {
+      font-size: .75rem;
+      font-weight: 600;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem
+    }
+
+    .section-tag::before {
+      content: '';
+      display: block;
+      width: 20px;
+      height: 1px;
+      background: var(--orange)
+    }
+
+    /* PROBLEMS */
+    #problems {
+      background: var(--bg)
+    }
+
+    .problem-header {
+      max-width: 700px;
+      margin-bottom: 4rem
+    }
+
+    .pain-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden
+    }
+
+    .pain-card {
+      background: var(--bg);
+      padding: 2.5rem 2rem;
+      transition: background .3s
+    }
+
+    .pain-card:hover {
+      background: var(--bg2)
+    }
+
+    .pain-num {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 3.5rem;
+      font-weight: 800;
+      color: rgba(43, 127, 255, .15);
+      line-height: 1;
+      margin-bottom: 1.25rem
+    }
+
+    .pain-title {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: .75rem;
+      line-height: 1.3
+    }
+
+    .pain-desc {
+      font-size: .88rem;
+      color: var(--text2);
+      line-height: 1.7
+    }
+
+    .pain-footer {
+      margin-top: 3.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem
+    }
+
+    .pain-arrow-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border), var(--orange))
+    }
+
+    .pain-footer-text {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--orange);
+      white-space: nowrap
+    }
+
+    /* FEATURES */
+    #features {
+      background: var(--bg2)
+    }
+
+    .features-header {
+      max-width: 700px;
+      margin-bottom: 5rem
+    }
+
+    .feat-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden
+    }
+
+    .feat-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--bg2);
+      transition: background .3s
+    }
+
+    .feat-row:hover {
+      background: var(--bg3)
+    }
+
+    .feat-row.reverse {
+      direction: rtl
+    }
+
+    .feat-row.reverse>* {
+      direction: ltr
+    }
+
+    .feat-info {
+      padding: 3rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-right: 1px solid var(--border)
+    }
+
+    .feat-row.reverse .feat-info {
+      border-right: none;
+      border-left: 1px solid var(--border)
+    }
+
+    .feat-icon-wrap {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(43, 127, 255, .1);
+      border: 1px solid rgba(43, 127, 255, .2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      margin-bottom: 1.5rem
+    }
+
+    .feat-info h3 {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin-bottom: .75rem;
+      line-height: 1.25
+    }
+
+    .feat-info p {
+      font-size: .9rem;
+      color: var(--text2);
+      line-height: 1.75
+    }
+
+    .feat-badge {
+      display: inline-block;
+      margin-top: 1.25rem;
+      padding: .3rem .85rem;
+      background: rgba(29, 110, 245, .1);
+      border: 1px solid rgba(29, 110, 245, .2);
+      border-radius: 50px;
+      font-size: .75rem;
+      color: #93bbfa;
+      font-weight: 500
+    }
+
+    .feat-visual {
+      padding: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .feat-mock {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.25rem;
+      width: 100%;
+      max-width: 320px
+    }
+
+    .fm-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      padding-bottom: .75rem;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .fm-title {
+      font-size: .8rem;
+      font-weight: 500;
+      color: var(--text2)
+    }
+
+    .fm-fields {
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+      margin-bottom: .85rem
+    }
+
+    .fm-field {
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: .6rem .85rem;
+      font-size: .78rem;
+      color: var(--text3)
+    }
+
+    .fm-btn {
+      background: var(--orange);
+      border-radius: 8px;
+      padding: .6rem;
+      text-align: center;
+      font-size: .78rem;
+      font-weight: 600;
+      color: #fff
+    }
+
+    .badge-mock {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      width: 100%;
+      max-width: 280px;
+      text-align: center
+    }
+
+    .badge-logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: var(--orange);
+      margin: 0 auto .75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: .7rem;
+      font-weight: 800;
+      color: #fff
+    }
+
+    .badge-name-big {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: .2rem
+    }
+
+    .badge-sub-small {
+      font-size: .73rem;
+      color: var(--text3);
+      margin-bottom: .85rem
+    }
+
+    .qr-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 2.5px;
+      width: 55px;
+      margin: 0 auto;
+      padding: 6px;
+      background: rgba(255, 255, 255, .06);
+      border-radius: 6px
+    }
+
+    .qc {
+      height: 8px;
+      border-radius: 1px
+    }
+
+    .qc.f {
+      background: var(--text2)
+    }
+
+    .qc.e {
+      background: transparent
+    }
+
+    .email-mock {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.25rem;
+      width: 100%;
+      max-width: 300px
+    }
+
+    .email-from {
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+      margin-bottom: 1rem;
+      padding-bottom: .75rem;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .email-av {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--orange);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .65rem;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0
+    }
+
+    .email-meta {
+      font-size: .75rem
+    }
+
+    .email-meta strong {
+      color: var(--text2);
+      display: block
+    }
+
+    .email-meta span {
+      color: var(--text3)
+    }
+
+    .email-subject {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: .9rem;
+      font-weight: 700;
+      margin-bottom: .5rem
+    }
+
+    .email-body {
+      font-size: .75rem;
+      color: var(--text2);
+      line-height: 1.6;
+      margin-bottom: .85rem
+    }
+
+    .email-btn {
+      background: rgba(43, 127, 255, .15);
+      border: 1px solid rgba(43, 127, 255, .25);
+      border-radius: 8px;
+      padding: .5rem;
+      text-align: center;
+      font-size: .75rem;
+      font-weight: 600;
+      color: var(--orange)
+    }
+
+    .stats-mock {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.25rem;
+      width: 100%;
+      max-width: 300px
+    }
+
+    .sm-title {
+      font-size: .8rem;
+      font-weight: 500;
+      color: var(--text2);
+      margin-bottom: 1rem
+    }
+
+    .sm-bars {
+      display: flex;
+      flex-direction: column;
+      gap: .6rem
+    }
+
+    .sm-bar-row {
+      display: flex;
+      align-items: center;
+      gap: .75rem
+    }
+
+    .sm-bar-label {
+      font-size: .72rem;
+      color: var(--text3);
+      width: 55px;
+      flex-shrink: 0
+    }
+
+    .sm-bar-track {
+      flex: 1;
+      height: 6px;
+      background: rgba(255, 255, 255, .06);
+      border-radius: 50px;
+      overflow: hidden
+    }
+
+    .sm-fill {
+      height: 100%;
+      border-radius: 50px;
+      background: linear-gradient(90deg, var(--blue), var(--orange))
+    }
+
+    .sm-val {
+      font-size: .72rem;
+      color: var(--text2);
+      width: 28px;
+      text-align: right;
+      flex-shrink: 0
+    }
+
+    /* HOW IT WORKS */
+    #how {
+      background: var(--bg)
+    }
+
+    .steps-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0
+    }
+
+    .step-row {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 2.5rem;
+      align-items: start;
+      padding: 3rem 0;
+      border-bottom: 1px solid var(--border);
+      position: relative
+    }
+
+    .step-row:last-child {
+      border-bottom: none
+    }
+
+    .step-left {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .75rem
+    }
+
+    .step-circle {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 800;
+      font-size: 1rem;
+      color: var(--text3);
+      flex-shrink: 0;
+      transition: all .3s
+    }
+
+    .step-row:hover .step-circle {
+      border-color: var(--orange);
+      color: var(--orange);
+      background: rgba(43, 127, 255, .08)
+    }
+
+    .step-line {
+      width: 1px;
+      flex: 1;
+      min-height: 60px;
+      background: var(--border)
+    }
+
+    .step-row:last-child .step-line {
+      display: none
+    }
+
+    .step-content {
+      padding-top: .4rem
+    }
+
+    .step-content h3 {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: .75rem;
+      line-height: 1.2
+    }
+
+    .step-content p {
+      font-size: .92rem;
+      color: var(--text2);
+      line-height: 1.75;
+      max-width: 600px
+    }
+
+    .step-tag {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: .3rem .85rem;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      font-size: .75rem;
+      color: var(--text3)
+    }
+
+    /* TESTIMONIALS */
+    #testimonials {
+      background: var(--bg2)
+    }
+
+    .t-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem
+    }
+
+    .t-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      transition: border-color .3s, transform .3s;
+      position: relative;
+      overflow: hidden
+    }
+
+    .t-card::before {
+      content: '"';
+      position: absolute;
+      top: -.5rem;
+      right: 1.5rem;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 8rem;
+      font-weight: 800;
+      color: rgba(43, 127, 255, .06);
+      line-height: 1;
+      pointer-events: none
+    }
+
+    .t-card:hover {
+      border-color: rgba(43, 127, 255, .2);
+      transform: translateY(-4px)
+    }
+
+    .t-stars {
+      color: #f59e0b;
+      font-size: .9rem;
+      margin-bottom: 1.25rem;
+      letter-spacing: .1em
+    }
+
+    .t-text {
+      font-size: .92rem;
+      color: var(--text2);
+      line-height: 1.8;
+      margin-bottom: 1.5rem;
+      font-style: italic;
+      position: relative;
+      z-index: 1
+    }
+
+    .t-author {
+      display: flex;
+      align-items: center;
+      gap: .75rem
+    }
+
+    .t-av {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue), var(--orange));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 700;
+      font-size: .8rem;
+      color: #fff;
+      flex-shrink: 0
+    }
+
+    .t-name {
+      font-weight: 600;
+      font-size: .88rem;
+      color: var(--text)
+    }
+
+    .t-role {
+      font-size: .78rem;
+      color: var(--text3);
+      margin-top: .1rem
+    }
+
+    /* PRICING */
+    #pricing {
+      background: var(--bg)
+    }
+
+    .p-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      align-items: start
+    }
+
+    .p-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      transition: all .3s
+    }
+
+    .p-card:hover {
+      border-color: var(--border-hover)
+    }
+
+    .p-card.featured {
+      background: var(--bg2);
+      border-color: rgba(43, 127, 255, .35);
+      box-shadow: 0 0 50px rgba(43, 127, 255, .08);
+      transform: scale(1.03);
+      position: relative
+    }
+
+    .p-card.featured::before {
+      content: 'Recommandé';
+      position: absolute;
+      top: -13px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--orange);
+      color: #fff;
+      font-size: .73rem;
+      font-weight: 600;
+      padding: .3rem .9rem;
+      border-radius: 50px;
+      white-space: nowrap
+    }
+
+    .p-type {
+      font-size: .75rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: .85rem
+    }
+
+    .p-price {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.7rem;
+      font-weight: 800;
+      margin-bottom: .25rem;
+      line-height: 1.1
+    }
+
+    .p-card.featured .p-price {
+      color: var(--orange)
+    }
+
+    .p-period {
+      font-size: .82rem;
+      color: var(--text3);
+      margin-bottom: 1.75rem;
+      padding-bottom: 1.75rem;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .p-features {
+      display: flex;
+      flex-direction: column;
+      gap: .7rem;
+      margin-bottom: 2rem
+    }
+
+    .p-feat {
+      display: flex;
+      align-items: flex-start;
+      gap: .6rem;
+      font-size: .88rem;
+      color: var(--text2)
+    }
+
+    .p-feat::before {
+      content: '✓';
+      color: #34d399;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+      font-size: .85rem
+    }
+
+    .p-btn {
+      display: block;
+      text-align: center;
+      padding: .8rem;
+      border-radius: 10px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      font-size: .9rem;
+      text-decoration: none;
+      transition: all .25s
+    }
+
+    .p-btn-ghost {
+      background: transparent;
+      color: var(--text2);
+      border: 1px solid var(--border)
+    }
+
+    .p-btn-ghost:hover {
+      border-color: var(--border-hover);
+      color: var(--text)
+    }
+
+    .p-btn-orange {
+      background: var(--orange);
+      color: #fff;
+      box-shadow: 0 0 24px var(--orange-glow)
+    }
+
+    .p-btn-orange:hover {
+      filter: brightness(1.1)
+    }
+
+    .p-note {
+      text-align: center;
+      margin-top: 2.5rem;
+      font-size: .83rem;
+      color: var(--text3);
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: .85rem
+    }
+
+    /* FAQ */
+    #faq {
+      background: var(--bg2)
+    }
+
+    .faq-wrap {
+      max-width: 760px;
+      margin: 0 auto
+    }
+
+    .faq-item {
+      border-bottom: 1px solid var(--border);
+      overflow: hidden
+    }
+
+    .faq-item:first-child {
+      border-top: 1px solid var(--border)
+    }
+
+    .faq-q {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.4rem 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+      font-family: 'Outfit', sans-serif;
+      font-size: .97rem;
+      font-weight: 500;
+      color: var(--text);
+      gap: 1.5rem
+    }
+
+    .faq-q:hover {
+      color: var(--text)
+    }
+
+    .faq-toggle {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all .3s;
+      color: var(--text3);
+      font-size: 1.1rem;
+      font-weight: 300
+    }
+
+    .faq-item.open .faq-toggle {
+      background: var(--orange);
+      border-color: var(--orange);
+      color: #fff;
+      transform: rotate(45deg)
+    }
+
+    .faq-a {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .4s ease
+    }
+
+    .faq-a-inner {
+      padding: 0 0 1.4rem;
+      font-size: .9rem;
+      color: var(--text2);
+      line-height: 1.8
+    }
+
+    .faq-item.open .faq-a {
+      max-height: 200px
+    }
+
+    /* CTA */
+    #cta {
+      background: var(--bg);
+      position: relative;
+      overflow: hidden
+    }
+
+    #cta::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 800px;
+      height: 400px;
+      background: radial-gradient(ellipse, rgba(43, 127, 255, .06), transparent 70%);
+      pointer-events: none
+    }
+
+    .cta-content {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 32px;
+      padding: 5rem 3rem;
+      box-shadow: 0 40px 100px rgba(0, 0, 0, 0.4);
+    }
+
+    .cta-heading {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: clamp(2.4rem, 4.5vw, 4rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -.025em;
+      margin-bottom: 1.5rem
+    }
+
+    .cta-heading em {
+      font-style: normal;
+      color: var(--orange)
+    }
+
+    .cta-sub {
+      font-size: 1.1rem;
+      color: var(--text2);
+      line-height: 1.75;
+      margin: 0 auto 3rem;
+      max-width: 600px;
+    }
+
+    .reassurance {
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      margin-bottom: 3.5rem;
+      flex-wrap: wrap;
+    }
+
+    .r-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 0.75rem;
+      width: 180px;
+    }
+
+    .r-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      color: var(--orange);
+    }
+
+    .r-text strong {
+      display: block;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: .25rem
+    }
+
+    .r-text span {
+      font-size: .82rem;
+      color: var(--text3)
+    }
+
+    .form-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2.5rem
+    }
+
+    .form-heading {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin-bottom: .4rem
+    }
+
+    .form-sub {
+      font-size: .83rem;
+      color: var(--text3);
+      margin-bottom: 2rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .f-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .85rem
+    }
+
+    .f-group {
+      display: flex;
+      flex-direction: column;
+      gap: .4rem;
+      margin-bottom: .85rem
+    }
+
+    .f-group label {
+      font-size: .78rem;
+      font-weight: 500;
+      color: var(--text3);
+      letter-spacing: .03em
+    }
+
+    .f-group input,
+    .f-group select,
+    .f-group textarea {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: .75rem 1rem;
+      font-family: 'Outfit', sans-serif;
+      font-size: .9rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color .2s;
+      width: 100%;
+      -webkit-appearance: none;
+      appearance: none
+    }
+
+    .f-group input::placeholder,
+    .f-group textarea::placeholder {
+      color: var(--text3)
+    }
+
+    .f-group select {
+      color: var(--text2)
+    }
+
+    .f-group select option {
+      background: var(--bg3);
+      color: var(--text)
+    }
+
+    .f-group input:focus,
+    .f-group select:focus,
+    .f-group textarea:focus {
+      border-color: rgba(43, 127, 255, .4);
+      box-shadow: 0 0 0 3px rgba(43, 127, 255, .06)
+    }
+
+    .f-group.err input,
+    .f-group.err select {
+      border-color: rgba(239, 68, 68, .5)
+    }
+
+    .f-errmsg {
+      font-size: .73rem;
+      color: #f87171;
+      margin-top: .25rem
+    }
+
+    .f-group textarea {
+      resize: vertical;
+      min-height: 85px
+    }
+
+    .f-submit {
+      width: 100%;
+      padding: .95rem;
+      background: var(--orange);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .25s;
+      box-shadow: 0 0 28px var(--orange-glow)
+    }
+
+    .f-submit:hover {
+      filter: brightness(1.12);
+      transform: translateY(-1px);
+      box-shadow: 0 0 40px rgba(43, 127, 255, .4)
+    }
+
+    .form-success {
+      display: none;
+      text-align: center;
+      padding: 3rem 0
+    }
+
+    .fs-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: rgba(52, 211, 153, .1);
+      border: 1px solid rgba(52, 211, 153, .2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.25rem;
+      font-size: 1.4rem
+    }
+
+    .form-success h3 {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: .5rem
+    }
+
+    .form-success p {
+      font-size: .88rem;
+      color: var(--text2)
+    }
+
+    /* FOOTER */
+    footer {
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      padding: 4rem 0 2rem
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr 1fr;
+      gap: 3rem;
+      margin-bottom: 3rem
+    }
+
+    .footer-brand img {
+      height: 30px;
+      filter: none;
+      margin-bottom: 1rem
+    }
+
+    .footer-brand p {
+      font-size: .85rem;
+      color: var(--text3);
+      line-height: 1.7;
+      max-width: 220px
+    }
+
+    .social-row {
+      display: flex;
+      gap: .6rem;
+      margin-top: 1.25rem
+    }
+
+    .soc {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      font-size: .8rem;
+      color: var(--text3);
+      transition: all .2s
+    }
+
+    .soc:hover {
+      border-color: var(--border-hover);
+      color: var(--text)
+    }
+
+    .footer-col h4 {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: .88rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 1.1rem;
+      letter-spacing: .02em
+    }
+
+    .footer-col ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: .6rem
+    }
+
+    .footer-col ul li a {
+      color: var(--text3);
+      text-decoration: none;
+      font-size: .85rem;
+      transition: color .2s
+    }
+
+    .footer-col ul li a:hover {
+      color: var(--text)
+    }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding-top: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: .75rem
+    }
+
+    .footer-bottom p {
+      font-size: .78rem;
+      color: var(--text3)
+    }
+
+    /* FLOATERS */
+    .wa-btn {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 50;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: #25D366;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 24px rgba(37, 211, 102, .35);
+      text-decoration: none;
+      font-size: 1.35rem;
+      transition: all .3s
+    }
+
+    .wa-btn:hover {
+      transform: scale(1.1)
+    }
+
+    .top-btn {
+      position: fixed;
+      bottom: 2rem;
+      right: 5.25rem;
+      z-index: 50;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      color: var(--text2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: .9rem;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: all .3s
+    }
+
+    .top-btn.show {
+      opacity: 1;
+      transform: translateY(0)
+    }
+
+    /* REVEAL */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity .75s ease, transform .75s ease
+    }
+
+    .reveal.in {
+      opacity: 1;
+      transform: translateY(0)
+    }
+
+    .d1 {
+      transition-delay: .1s
+    }
+
+    .d2 {
+      transition-delay: .2s
+    }
+
+    .d3 {
+      transition-delay: .3s
+    }
+
+    /* RESPONSIVE */
+    @media(max-width:1024px) {
+
+      .hero-grid,
+      .cta-grid {
+        grid-template-columns: 1fr
+      }
+
+      .t-grid,
+      .p-grid {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .feat-row {
+        grid-template-columns: 1fr
+      }
+
+      .feat-row.reverse {
+        direction: ltr
+      }
+
+      .feat-row.reverse .feat-info {
+        border-left: none
+      }
+
+      .feat-info {
+        border-right: none;
+        border-bottom: 1px solid var(--border)
+      }
+    }
+
+    @media(max-width:768px) {
+
+      .nav-links,
+      .nav-ctas {
+        display: none
+      }
+
+      .hamburger {
+        display: flex
+      }
+
+      section {
+        padding: 4.5rem 0
+      }
+
+      #hero {
+        padding: 7rem 0 4rem;
+        min-height: auto
+      }
+
+      .hero-grid {
+        gap: 3.5rem
+      }
+
+      .pain-grid,
+      .t-grid,
+      .p-grid {
+        grid-template-columns: 1fr
+      }
+
+      .p-card.featured {
+        transform: none
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr
+      }
+
+      .footer-bottom {
+        flex-direction: column;
+        text-align: center
+      }
+
+      .f-row {
+        grid-template-columns: 1fr
+      }
+
+      .pain-grid {
+        background: none;
+        border: none;
+        border-radius: 0
+      }
+
+      .pain-card {
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        margin-bottom: 1rem
+      }
+
+      .hero-grid {
+        text-align: center;
+      }
+      .hero-headline {
+        text-align: center;
+      }
+      .hero-sub {
+        text-align: center;
+      }
+      .hero-ctas {
+        justify-content: center;
+      }
+      .trust-row {
+        justify-content: center;
+      }
+    }
+
+    /* CURSOR GLOW */
+    .cursor-glow {
+      position: fixed;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      background: radial-gradient(circle, rgba(43,127,255,0.07) 0%, rgba(43,127,255,0.02) 40%, transparent 70%);
+      transform: translate(-50%, -50%);
+      transition: left 0.08s ease-out, top 0.08s ease-out;
+      mix-blend-mode: screen;
+    }
+    @media (max-width: 768px) {
+      .cursor-glow { display: none; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav id="nav">
+    <div class="nav-inner">
+      <a href="#"><img src="https://i.imgur.com/jFDrQbM.png" alt="Eventzone"
+          style="height:24px; filter: grayscale(1) brightness(10); mix-blend-mode: screen;" /></a>
+      <ul class="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#testimonials">Testimonials</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+      <div class="nav-ctas">
+        <div class="lang-dropdown" id="langDropdown">
+          <div class="lang-selected" onclick="event.stopPropagation(); toggleLangDropdown()">
+            <img class="lang-flag" id="selectedFlag" src="https://i.imgur.com/NXtMImD.png" alt="EN" />
+            <span class="lang-code" id="selectedCode">EN</span>
+            <span class="lang-arrow">▼</span>
+          </div>
+          <div class="lang-menu">
+            <button class="lang-option active" data-lang="en" onclick="event.stopPropagation(); setLang('en')">
+              <img class="lang-flag" src="https://i.imgur.com/NXtMImD.png" alt="EN" />
+              <span class="lang-label">English</span>
+              <span class="lang-check">✓</span>
+            </button>
+            <button class="lang-option" data-lang="fr" onclick="event.stopPropagation(); setLang('fr')">
+              <img class="lang-flag" src="https://i.imgur.com/yS9Hjy9.png" alt="FR" />
+              <span class="lang-label">Français</span>
+              <span class="lang-check">✓</span>
+            </button>
+          </div>
+        </div>
+        <a href="https://calendly.com/eventzone114/eventzone-demo-meeting-all-in-one-event-management" class="btn btn-orange" id="nav-cta">Book a demo</a>
+      </div>
+      <button class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <div class="mobile-menu" id="mob">
+    <div class="lang-dropdown" id="langDropdownMob" style="margin-bottom:1.5rem">
+      <div class="lang-selected" onclick="event.stopPropagation(); toggleLangDropdown('mob')">
+        <img class="lang-flag" id="selectedFlagMob" src="https://i.imgur.com/NXtMImD.png" alt="EN" />
+        <span class="lang-code" id="selectedCodeMob">EN</span>
+        <span class="lang-arrow">▼</span>
+      </div>
+      <div class="lang-menu">
+        <button class="lang-option active" data-lang="en" onclick="event.stopPropagation(); setLang('en')">
+          <img class="lang-flag" src="https://i.imgur.com/NXtMImD.png" alt="EN" />
+          <span class="lang-label">English</span>
+          <span class="lang-check">✓</span>
+        </button>
+        <button class="lang-option" data-lang="fr" onclick="event.stopPropagation(); setLang('fr')">
+          <img class="lang-flag" src="https://i.imgur.com/yS9Hjy9.png" alt="FR" />
+          <span class="lang-label">Français</span>
+          <span class="lang-check">✓</span>
+        </button>
+      </div>
+    </div>
+    <a href="#features" onclick="toggleMenu()" id="mob-features">Features</a>
+    <a href="#pricing" onclick="toggleMenu()" id="mob-pricing">Pricing</a>
+    <a href="#testimonials" onclick="toggleMenu()" id="mob-testimonials">Testimonials</a>
+    <a href="#faq" onclick="toggleMenu()" id="mob-faq">FAQ</a>
+    <a href="https://calendly.com/eventzone114/eventzone-demo-meeting-all-in-one-event-management" onclick="toggleMenu()" id="mob-cta">Book a demo</a>
+  </div>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-blobs">
+      <div class="blob blob1"></div>
+      <div class="blob blob2"></div>
+    </div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="reveal">
+
+          <h1 class="display hero-headline" id="t-hero-title">
+            What all the<br />
+            best <em>events</em><br />
+            have in<br />
+            <span class="line-stroke">common.</span>
+          </h1>
+          <p class="body-lg hero-sub" id="t-hero-sub">From online registration to badge in hand — Eventzone automates everything so you can focus on what truly matters.</p>
+          <div class="hero-ctas">
+            <a href="https://calendly.com/eventzone114/eventzone-demo-meeting-all-in-one-event-management" class="btn btn-orange btn-lg" id="t-hero-cta1">Book my free demo</a>
+            <a href="#features" class="btn btn-ghost btn-lg" id="t-hero-cta2">See the platform</a>
+          </div>
+          <div class="trust-row">
+            <div class="trust-item">
+              <div class="trust-check"></div><span id="t-trust1">No commitment</span>
+            </div>
+            <div class="trust-item">
+              <div class="trust-check"></div><span id="t-trust2">Response within 24h</span>
+            </div>
+            <div class="trust-item">
+              <div class="trust-check"></div><span id="t-trust3">Arabic & French support</span>
+            </div>
+          </div>
+        </div>
+        <div class="mockup-wrap reveal d2">
+          <div class="mockup-glow"></div>
+          <div class="chip-float cf1"><span class="cf-dot cfd-g"></span><span id="t-chip1">487 registered live</span></div>
+          <div class="mockup">
+            <div class="mockup-topbar">
+              <div class="mockup-dots">
+                <div class="dot dot-r"></div>
+                <div class="dot dot-y"></div>
+                <div class="dot dot-g"></div>
+              </div>
+              <div class="mockup-title">Forum Emploi Alger 2026</div>
+              <div class="live-pill"><span class="live-dot"></span>Live</div>
+            </div>
+            <div class="m-stats">
+              <div class="m-stat">
+                <div class="m-stat-n b">487</div>
+                <div class="m-stat-l" id="t-ms1">Registered</div>
+              </div>
+              <div class="m-stat">
+                <div class="m-stat-n o">312</div>
+                <div class="m-stat-l" id="t-ms2">Badges printed</div>
+              </div>
+              <div class="m-stat">
+                <div class="m-stat-n">98%</div>
+                <div class="m-stat-l" id="t-ms3">Attendance</div>
+              </div>
+              <div class="m-stat">
+                <div class="m-stat-n">3s</div>
+                <div class="m-stat-l" id="t-ms4">Avg. check-in</div>
+              </div>
+            </div>
+            <div class="m-bar-wrap">
+              <div class="m-bar-label"><span id="t-mcap">Room capacity</span><span>487 / 500</span></div>
+              <div class="m-bar">
+                <div class="m-bar-fill"></div>
+              </div>
+            </div>
+            <div class="m-rows">
+              <div class="m-row">
+                <div class="m-av blue">KA</div><span class="m-row-name">Karim Aissaoui</span><span
+                  class="m-pill mp-green" id="t-mpill1">Checked in ✓</span>
+              </div>
+              <div class="m-row">
+                <div class="m-av orange">SM</div><span class="m-row-name">Sonia Mebarki</span><span
+                  class="m-pill mp-blue" id="t-mpill2">Badge ready</span>
+              </div>
+            </div>
+          </div>
+          <div class="chip-float cf2"><span class="cf-dot cfd-o"></span><span id="t-chip2">Badge printed in 3 sec</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee-section">
+    <div class="marquee-track" id="marquee">
+      <span class="marquee-item"><span class="marquee-sep"></span><strong>+120</strong> <span id="t-mq1a">events organized</span></span>
+      <span class="marquee-item"><span class="marquee-sep"></span><strong>+45 000</strong> <span id="t-mq2a">badges printed</span></span>
+      <span class="marquee-item"><span class="marquee-sep"></span><strong>98%</strong> <span id="t-mq3a">client satisfaction</span></span>
+      <span class="marquee-item"><span class="marquee-sep"></span>Sonatrach Events</span>
+      <span class="marquee-item"><span class="marquee-sep"></span>Forum Algérie Business</span>
+      <span class="marquee-item"><span class="marquee-sep"></span><span id="t-mq4a">University of Algiers</span></span>
+      <span class="marquee-item"><span class="marquee-sep"></span>Ooredoo Algérie</span>
+      <span class="marquee-item"><span class="marquee-sep"></span><span id="t-mq5a">Min. of Training</span></span>
+      <span class="marquee-item"><span class="marquee-sep"></span><span id="t-mq6a">Arabic & French support</span></span>
+      <span class="marquee-item"><span class="marquee-sep"></span>Startup Label Algérie</span>
+      <span class="marquee-item"><span class="marquee-sep"></span><strong>+120</strong> <span id="t-mq1b">events organized</span></span>
+      <span class="marquee-item"><span class="marquee-sep"></span><strong>+45 000</strong> <span id="t-mq2b">badges printed</span></span>
+      <span class="marquee-item"><span class="marquee-sep"></span><strong>98%</strong> <span id="t-mq3b">client satisfaction</span></span>
+      <span class="marquee-item"><span class="marquee-sep"></span>Sonatrach Events</span>
+      <span class="marquee-item"><span class="marquee-sep"></span>Forum Algérie Business</span>
+      <span class="marquee-item"><span class="marquee-sep"></span><span id="t-mq4b">University of Algiers</span></span>
+      <span class="marquee-item"><span class="marquee-sep"></span>Ooredoo Algérie</span>
+      <span class="marquee-item"><span class="marquee-sep"></span><span id="t-mq5b">Min. of Training</span></span>
+      <span class="marquee-item"><span class="marquee-sep"></span><span id="t-mq6b">Arabic & French support</span></span>
+      <span class="marquee-item"><span class="marquee-sep"></span>Startup Label Algérie</span>
+    </div>
+  </div>
+
+  <!-- PROBLEMS -->
+  <section id="problems">
+    <div class="container">
+      <div class="problem-header reveal">
+        <div class="section-tag" id="t-prob-tag">The Problem</div>
+        <h2 class="h2" id="t-prob-title">Still organizing your events<br />the old way?</h2>
+      </div>
+      <div class="pain-grid reveal">
+        <div class="pain-card">
+          <div class="pain-num">01</div>
+          <div class="pain-title" id="t-pain1-t">Endless queues at check-in</div>
+          <div class="pain-desc" id="t-pain1-d">Paper-based registration creates bottlenecks and frustrates your attendees from the moment they arrive. First impression ruined.</div>
+        </div>
+        <div class="pain-card">
+          <div class="pain-num">02</div>
+          <div class="pain-title" id="t-pain2-t">Data scattered between Excel and WhatsApp</div>
+          <div class="pain-desc" id="t-pain2-d">You spend hours consolidating registration lists across multiple tools before every event. High risk of errors.</div>
+        </div>
+        <div class="pain-card">
+          <div class="pain-num">03</div>
+          <div class="pain-title" id="t-pain3-t">Badges printed at the last minute</div>
+          <div class="pain-desc" id="t-pain3-d">Late nights, printing errors, unprofessional image. All for a badge that could have been ready in 2 hours.</div>
+        </div>
+      </div>
+      <div class="pain-footer reveal">
+        <div class="pain-arrow-line"></div>
+        <div class="pain-footer-text" id="t-pain-footer">Eventzone solves all of this →</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features">
+    <div class="container">
+      <div class="features-header reveal">
+        <div class="section-tag" id="t-feat-tag">The Solution</div>
+        <h2 class="h2" id="t-feat-title">One platform. Everything you need.</h2>
+      </div>
+      <div class="feat-stack reveal">
+        <div class="feat-row">
+          <div class="feat-info">
+            <div class="feat-icon-wrap">📋</div>
+            <h3 id="t-f1-t">Online registration & custom forms</h3>
+            <p id="t-f1-d">Create custom registration forms in minutes. Collect exactly what you need — no developer required.</p>
+            <span class="feat-badge" id="t-f1-b">Zero paper · Deploy in 30 min</span>
+          </div>
+          <div class="feat-visual">
+            <div class="feat-mock">
+              <div class="fm-header"><span class="fm-title" id="t-fm-title">Registration form</span><span
+                  style="font-size:.7rem;color:var(--orange)">● Live</span></div>
+              <div class="fm-fields">
+                <div class="fm-field" id="t-fm-f1">Full name *</div>
+                <div class="fm-field" id="t-fm-f2">Company / Organization</div>
+                <div class="fm-field" id="t-fm-f3">Job title</div>
+                <div class="fm-field" id="t-fm-f4">Phone number</div>
+              </div>
+              <div class="fm-btn" id="t-fm-btn">Confirm my registration →</div>
+            </div>
+          </div>
+        </div>
+        <div class="feat-row reverse">
+          <div class="feat-info">
+            <div class="feat-icon-wrap">🖨️</div>
+            <h3 id="t-f2-t">Instant on-site badge printing</h3>
+            <p id="t-f2-d">100% custom badges printed on standard A4 paper. No special equipment. Home print option to avoid any queue.</p>
+            <span class="feat-badge" id="t-f2-b">3 seconds per badge · Standard A4 paper</span>
+          </div>
+          <div class="feat-visual">
+            <div class="badge-mock">
+              <div class="badge-logo">EZ</div>
+              <div class="badge-name-big">Karim Aissaoui</div>
+              <div class="badge-sub-small" id="t-badge-sub">Sales Director · Sonatrach</div>
+              <div class="qr-grid">
+                <div class="qc f"></div>
+                <div class="qc e"></div>
+                <div class="qc f"></div>
+                <div class="qc f"></div>
+                <div class="qc e"></div>
+                <div class="qc e"></div>
+                <div class="qc f"></div>
+                <div class="qc e"></div>
+                <div class="qc e"></div>
+                <div class="qc f"></div>
+                <div class="qc f"></div>
+                <div class="qc f"></div>
+                <div class="qc f"></div>
+                <div class="qc e"></div>
+                <div class="qc f"></div>
+                <div class="qc e"></div>
+                <div class="qc e"></div>
+                <div class="qc f"></div>
+                <div class="qc f"></div>
+                <div class="qc e"></div>
+                <div class="qc f"></div>
+                <div class="qc e"></div>
+                <div class="qc e"></div>
+                <div class="qc f"></div>
+                <div class="qc f"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="feat-row">
+          <div class="feat-info">
+            <div class="feat-icon-wrap">📧</div>
+            <h3 id="t-f3-t">Automatic notifications at every step</h3>
+            <p id="t-f3-d">Registration confirmations, D-3, D-1 and day-of reminders. Your attendees are informed automatically at every step — without you lifting a finger.</p>
+            <span class="feat-badge" id="t-f3-b">100% automated · Arabic & French</span>
+          </div>
+          <div class="feat-visual">
+            <div class="email-mock">
+              <div class="email-from">
+                <div class="email-av">EZ</div>
+                <div class="email-meta"><strong>Eventzone</strong><span>contact@eventzone.pro</span></div>
+              </div>
+              <div class="email-subject" id="t-em-subj">✅ Registration confirmed — Job Forum</div>
+              <div class="email-body" id="t-em-body">Hello Karim, your registration for the Algiers Job Forum 2026 is confirmed. Your badge awaits you at the entrance...</div>
+              <div class="email-btn" id="t-em-btn">Download my badge →</div>
+            </div>
+          </div>
+        </div>
+        <div class="feat-row reverse">
+          <div class="feat-info">
+            <div class="feat-icon-wrap">📊</div>
+            <h3 id="t-f4-t">Real-time statistics & tracking</h3>
+            <p id="t-f4-d">Attendance rate, registrations per hour, badges printed, live check-ins. Your dashboard updates in real time throughout the event.</p>
+            <span class="feat-badge" id="t-f4-b">Live dashboard · CSV export</span>
+          </div>
+          <div class="feat-visual">
+            <div class="stats-mock">
+              <div class="sm-title" id="t-sm-title">Real-time attendance</div>
+              <div class="sm-bars">
+                <div class="sm-bar-row"><span class="sm-bar-label">09h–10h</span>
+                  <div class="sm-bar-track">
+                    <div class="sm-fill" style="width:40%"></div>
+                  </div><span class="sm-val">82</span>
+                </div>
+                <div class="sm-bar-row"><span class="sm-bar-label">10h–11h</span>
+                  <div class="sm-bar-track">
+                    <div class="sm-fill" style="width:88%"></div>
+                  </div><span class="sm-val">176</span>
+                </div>
+                <div class="sm-bar-row"><span class="sm-bar-label">11h–12h</span>
+                  <div class="sm-bar-track">
+                    <div class="sm-fill" style="width:65%"></div>
+                  </div><span class="sm-val">130</span>
+                </div>
+                <div class="sm-bar-row"><span class="sm-bar-label">14h–15h</span>
+                  <div class="sm-bar-track">
+                    <div class="sm-fill" style="width:50%"></div>
+                  </div><span class="sm-val">99</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:3.5rem" class="reveal">
+        <a href="https://calendly.com/eventzone114/eventzone-demo-meeting-all-in-one-event-management" class="btn btn-orange btn-lg" id="t-feat-cta">Book a free demo</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW -->
+  <section id="how">
+    <div class="container">
+      <div style="max-width:600px;margin-bottom:4rem" class="reveal">
+        <div class="section-tag" id="t-how-tag">How it works</div>
+        <h2 class="h2" id="t-how-title">Your event ready in 3 steps.</h2>
+      </div>
+      <div class="steps-container">
+        <div class="step-row reveal">
+          <div class="step-left">
+            <div class="step-circle">01</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-content">
+            <h3 id="t-s1-t">Create and configure your event</h3>
+            <p id="t-s1-d">Set up your registration form, customize your badge design, and configure automatic notifications. Everything is ready in under 30 minutes.</p>
+            <span class="step-tag" id="t-s1-b">⏱ 30 min setup</span>
+          </div>
+        </div>
+        <div class="step-row reveal">
+          <div class="step-left">
+            <div class="step-circle">02</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-content">
+            <h3 id="t-s2-t">Manage registrations from your dashboard</h3>
+            <p id="t-s2-d">Track registrations in real time, send automatic confirmations, manage your attendee list and prepare badges — all from one interface.</p>
+            <span class="step-tag" id="t-s2-b">📊 Real-time tracking</span>
+          </div>
+        </div>
+        <div class="step-row reveal">
+          <div class="step-left">
+            <div class="step-circle" style="border-color:rgba(43,127,255,.4);color:var(--orange)">03</div>
+          </div>
+          <div class="step-content">
+            <h3 id="t-s3-t">Event day: welcome attendees with confidence</h3>
+            <p id="t-s3-d">Digital QR code check-in, badge printing in 3 seconds, attendance recorded in real time. You have full control — no stress, no queues.</p>
+            <span class="step-tag" id="t-s3-b">🎯 3-second check-in</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section id="testimonials">
+    <div class="container">
+      <div style="max-width:600px;margin:0 auto 4rem;text-align:center" class="reveal">
+        <div class="section-tag" style="justify-content:center" id="t-test-tag">Testimonials</div>
+        <h2 class="h2" id="t-test-title">What our clients say</h2>
+      </div>
+      <div class="t-grid">
+        <div class="t-card reveal">
+          <div class="t-stars">★★★★★</div>
+          <p class="t-text" id="t-rev1">"Eventzone transformed our Job Forum. Zero queues, badges printed in seconds. Our 800 attendees were impressed by the professionalism."</p>
+          <div class="t-author">
+            <div class="t-av">KB</div>
+            <div>
+              <div class="t-name">Karim B.</div>
+              <div class="t-role" id="t-rev1-r">HR Manager · Industrial company, Algiers</div>
+            </div>
+          </div>
+        </div>
+        <div class="t-card reveal d1">
+          <div class="t-stars">★★★★★</div>
+          <p class="t-text" id="t-rev2">"Before Eventzone, we spent 2 days preparing badges. Now it's done in 2 hours. I'm never going back — massive time savings."</p>
+          <div class="t-author">
+            <div class="t-av">SM</div>
+            <div>
+              <div class="t-name">Sonia M.</div>
+              <div class="t-role" id="t-rev2-r">Event Organizer · Oran</div>
+            </div>
+          </div>
+        </div>
+        <div class="t-card reveal d2">
+          <div class="t-stars">★★★★★</div>
+          <p class="t-text" id="t-rev3">"Arabic and French support is a real plus. The team responds quickly and solves everything. A tool truly designed for our needs in Algeria."</p>
+          <div class="t-author">
+            <div class="t-av">MA</div>
+            <div>
+              <div class="t-name">Mohamed A.</div>
+              <div class="t-role" id="t-rev3-r">Coordinator · Public institution, Constantine</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section id="pricing">
+    <div class="container">
+      <div style="max-width:600px;margin:0 auto 4rem;text-align:center" class="reveal">
+        <div class="section-tag" style="justify-content:center" id="t-price-tag">Pricing</div>
+        <h2 class="h2" id="t-price-title">Pay per event.<br />No subscriptions ever.</h2>
+      </div>
+      <div class="p-grid">
+        <div class="p-card reveal">
+          <div class="p-type" id="t-p1-type">Essential</div>
+          <div class="p-price" id="t-p1-price">Starting at 10,000 DZD</div>
+          <div class="p-period" id="t-p1-period">per event · up to 100 attendees</div>
+          <div class="p-features">
+            <div class="p-feat" id="t-p1-f1">Custom registration form</div>
+            <div class="p-feat" id="t-p1-f2">Automatic confirmation emails</div>
+            <div class="p-feat" id="t-p1-f3">Custom printable badges</div>
+            <div class="p-feat" id="t-p1-f4">Email support</div>
+          </div>
+          <a href="https://calendly.com/eventzone114/eventzone-demo-meeting-all-in-one-event-management" class="p-btn p-btn-orange" id="t-p1-btn">Book a demo</a>
+        </div>
+        <div class="p-card featured reveal d1">
+          <div class="p-type" id="t-p2-type">Professional</div>
+          <div class="p-price" id="t-p2-price">Starting at 50,000 DZD</div>
+          <div class="p-period" id="t-p2-period">per event · up to 500 attendees</div>
+          <div class="p-features">
+            <div class="p-feat" id="t-p2-f1">Everything in Essential</div>
+            <div class="p-feat" id="t-p2-f2">Digital QR code check-in</div>
+            <div class="p-feat" id="t-p2-f3">Live statistics dashboard</div>
+            <div class="p-feat" id="t-p2-f4">On-site badge printing included</div>
+            <div class="p-feat" id="t-p2-f5">Priority responsive support</div>
+          </div>
+          <a href="https://calendly.com/eventzone114/eventzone-demo-meeting-all-in-one-event-management" class="p-btn p-btn-orange" id="t-p2-btn">Book a demo</a>
+        </div>
+        <div class="p-card reveal d2">
+          <div class="p-type" id="t-p3-type">Enterprise</div>
+          <div class="p-price" id="t-p3-price">Custom quote</div>
+          <div class="p-period" id="t-p3-period">unlimited attendees · up to 2,000,000 DZD</div>
+          <div class="p-features">
+            <div class="p-feat" id="t-p3-f1">Everything in Professional</div>
+            <div class="p-feat" id="t-p3-f2">Dedicated on-site team</div>
+            <div class="p-feat" id="t-p3-f3">Fully customized dashboard</div>
+            <div class="p-feat" id="t-p3-f4">Detailed post-event report</div>
+            <div class="p-feat" id="t-p3-f5">Dedicated account manager</div>
+          </div>
+          <a href="https://calendly.com/eventzone114/eventzone-demo-meeting-all-in-one-event-management" class="p-btn p-btn-ghost" id="t-p3-btn">Contact us</a>
+        </div>
+      </div>
+      <div class="p-note reveal" id="t-price-note">💡 All prices are in DZD. Custom quote available on request within 24h.</div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="container">
+      <div style="max-width:600px;margin:0 auto 4rem;text-align:center" class="reveal">
+        <div class="section-tag" style="justify-content:center" id="t-faq-tag">FAQ</div>
+        <h2 class="h2" id="t-faq-title">Frequently asked questions</h2>
+      </div>
+      <div class="faq-wrap">
+        <div class="faq-item reveal"><button class="faq-q" onclick="faq(this)"><span id="t-fq1">Does Eventzone work for small events?</span><div class="faq-toggle">+</div></button>
+          <div class="faq-a">
+            <div class="faq-a-inner" id="t-fa1">Yes. From 20 to 5,000 attendees. Our pricing adapts fully to the size of your event. Contact us for a custom quote.</div>
+          </div>
+        </div>
+        <div class="faq-item reveal"><button class="faq-q" onclick="faq(this)"><span id="t-fq2">What equipment is needed to print badges?</span><div class="faq-toggle">+</div></button>
+          <div class="faq-a">
+            <div class="faq-a-inner" id="t-fa2">No special equipment. Standard A4 paper and a regular printer. The home print option lets attendees print their badge before the event.</div>
+          </div>
+        </div>
+        <div class="faq-item reveal"><button class="faq-q" onclick="faq(this)"><span id="t-fq3">Does the platform work in Arabic?</span><div class="faq-toggle">+</div></button>
+          <div class="faq-a">
+            <div class="faq-a-inner" id="t-fa3">Yes. Eventzone fully supports French and Arabic. Your forms, badges, and communications can be entirely in Arabic.</div>
+          </div>
+        </div>
+        <div class="faq-item reveal"><button class="faq-q" onclick="faq(this)"><span id="t-fq4">How long does it take to set up an event?</span><div class="faq-toggle">+</div></button>
+          <div class="faq-a">
+            <div class="faq-a-inner" id="t-fa4">30 to 60 minutes on average for a standard event. Our team can also set everything up for you if you prefer.</div>
+          </div>
+        </div>
+        <div class="faq-item reveal"><button class="faq-q" onclick="faq(this)"><span id="t-fq5">Is there a monthly subscription or commitment?</span><div class="faq-toggle">+</div></button>
+          <div class="faq-a">
+            <div class="faq-a-inner" id="t-fa5">No. You only pay per event. No subscription, no long-term commitment. Use Eventzone when you need it.</div>
+          </div>
+        </div>
+        <div class="faq-item reveal"><button class="faq-q" onclick="faq(this)"><span id="t-fq6">Do you provide on-site support on event day?</span><div class="faq-toggle">+</div></button>
+          <div class="faq-a">
+            <div class="faq-a-inner" id="t-fa6">Yes, for Professional and Enterprise plans. Our team can be on-site to manage check-in, badge printing, and welcome.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="cta">
+    <div class="container">
+      <div class="cta-content reveal">
+        <div class="section-tag" style="justify-content:center" id="t-cta-tag">Take action</div>
+        <h2 class="cta-heading" id="t-cta-title">Organize your next event<br /><em>stress-free.</em></h2>
+        <p class="cta-sub" id="t-cta-sub">Join the organizers who trust Eventzone. Free demo, tailored to your event, guaranteed response within 24h.</p>
+        
+        <div class="reassurance">
+          <div class="r-item">
+            <div class="r-icon">📞</div>
+            <div class="r-text"><strong id="t-r1a">24h response</strong><span id="t-r1b">Ultra-responsive team</span></div>
+          </div>
+          <div class="r-item">
+            <div class="r-icon">🎯</div>
+            <div class="r-text"><strong id="t-r2a">Custom demo</strong><span id="t-r2b">Tailored to your needs</span></div>
+          </div>
+          <div class="r-item">
+            <div class="r-icon">🔒</div>
+            <div class="r-text"><strong id="t-r3a">No commitment</strong><span id="t-r3b">Total freedom</span></div>
+          </div>
+        </div>
+
+        <a href="https://calendly.com/eventzone114/eventzone-demo-meeting-all-in-one-event-management" 
+           class="btn btn-orange btn-lg" style="padding: 1.2rem 3rem; font-size: 1.1rem;">
+          <span id="t-cta-btn">Book my free demo</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <img src="https://i.imgur.com/jFDrQbM.png" alt="Eventzone" style="height:30px; filter: grayscale(1) brightness(10); mix-blend-mode: screen;" />
+          <p id="t-footer-desc">The Algerian event management platform. From registration to badge in hand.</p>
+          <div class="social-row">
+            <a href="#" class="soc">in</a>
+            <a href="#" class="soc">ig</a>
+            <a href="#" class="soc">fb</a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4 id="t-fh1">Platform</h4>
+          <ul>
+            <li><a href="#features" id="t-fl1">Features</a></li>
+            <li><a href="#pricing" id="t-fl2">Pricing</a></li>
+            <li><a href="https://calendly.com/eventzone114/eventzone-demo-meeting-all-in-one-event-management" id="t-fl3">Book a demo</a></li>
+            <li><a href="https://crm.eventzone.pro" id="t-fl4">Sign in</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contact</h4>
+          <ul>
+            <li><a href="#" id="t-fl5">📍 Algiers, Algeria</a></li>
+            <li><a href="mailto:contact@eventzone.pro">✉️ contact@eventzone.pro</a></li>
+            <li><a href="https://eventzone.pro">🌐 eventzone.pro</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4 id="t-fh3">Legal</h4>
+          <ul>
+            <li><a href="#" id="t-fl6">Legal notice</a></li>
+            <li><a href="#" id="t-fl7">Privacy</a></li>
+            <li><a href="#" id="t-fl8">Terms</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p id="t-footer-copy">© 2026 Eventzone Pro. All rights reserved.</p>
+
+      </div>
+    </div>
+  </footer>
+
+  <a href="https://wa.me/213XXXXXXXXX" class="wa-btn" target="_blank">💬</a>
+  <button class="top-btn" id="topBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+  <script>
+    window.addEventListener('scroll', () => {
+      document.getElementById('nav').classList.toggle('scrolled', scrollY > 60);
+      document.getElementById('topBtn').classList.toggle('show', scrollY > 400);
+    });
+    function toggleMenu() { document.getElementById('mob').classList.toggle('open') }
+    const obs = new IntersectionObserver(e => e.forEach(x => { if (x.isIntersecting) x.target.classList.add('in') }), { threshold: .1 });
+    document.querySelectorAll('.reveal').forEach(r => obs.observe(r));
+    function faq(btn) {
+      const item = btn.parentElement;
+      const open = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+      if (!open) item.classList.add('open');
+    }
+    function send() {
+      const n = document.getElementById('fn').value.trim();
+      const p = document.getElementById('fp').value.trim();
+      const t = document.getElementById('ft').value;
+      let ok = true;
+      ['g-name', 'g-phone', 'g-type'].forEach(id => document.getElementById(id).classList.remove('err'));
+      if (!n) { document.getElementById('g-name').classList.add('err'); ok = false }
+      if (!p) { document.getElementById('g-phone').classList.add('err'); ok = false }
+      if (!t) { document.getElementById('g-type').classList.add('err'); ok = false }
+      if (!ok) return;
+      document.getElementById('fContent').style.display = 'none';
+      document.getElementById('fSuccess').style.display = 'block';
+    }
+
+    // LANGUAGE SYSTEM — FR / EN
+    var TX = {
+      fr: {
+        navFeatures: "Fonctionnalit\u00e9s", navPricing: "Tarifs", navTest: "T\u00e9moignages", navFaq: "FAQ",
+        navCta: "Demander une d\u00e9mo",
+        heroTitle: "Ce que les<br>meilleurs <em>\u00e9v\u00e9nements</em><br>ont tous en<br><span class=\"line-stroke\">commun.</span>",
+        heroSub: "De l\u2019inscription en ligne au badge en main \u2014 Eventzone automatise tout pour que vous vous concentriez sur ce qui compte vraiment.",
+        heroCta1: "Demander une d\u00e9mo gratuite", heroCta2: "Voir la plateforme",
+        trust1: "Aucun engagement", trust2: "R\u00e9ponse sous 24h", trust3: "Support arabe & fran\u00e7ais",
+        probTag: "Le probl\u00e8me", probTitle: "Vous organisez encore vos \u00e9v\u00e9nements<br>\u00e0 l\u2019ancienne ?",
+        pain1t: "Files d\u2019attente interminables \u00e0 l\u2019accueil",
+        pain1d: "Les inscriptions sur papier cr\u00e9ent des embouteillages et frustrent vos participants d\u00e8s leur arriv\u00e9e. Premi\u00e8re impression rat\u00e9e.",
+        pain2t: "Donn\u00e9es \u00e9parpill\u00e9es entre Excel et WhatsApp",
+        pain2d: "Vous passez des heures \u00e0 consolider des listes d\u2019inscrits entre plusieurs outils avant chaque \u00e9v\u00e9nement. Risques d\u2019erreurs \u00e9lev\u00e9s.",
+        pain3t: "Badges imprim\u00e9s \u00e0 la derni\u00e8re minute",
+        pain3d: "Nuits blanches, erreurs d\u2019impression, mauvaise image professionnelle. Tout \u00e7a pour un badge qui aurait pu \u00eatre pr\u00eat en 2 heures.",
+        painFooter: "Eventzone r\u00e8gle tout \u00e7a \u2192",
+        featTag: "La solution", featTitle: "Une plateforme. Tout est l\u00e0.",
+        f1t: "Inscriptions en ligne & formulaires sur mesure",
+        f1d: "Cr\u00e9ez des formulaires d\u2019inscription personnalis\u00e9s en quelques minutes. Collectez exactement ce dont vous avez besoin \u2014 aucun d\u00e9veloppeur requis.",
+        f1b: "Z\u00e9ro papier \u00b7 D\u00e9ploiement en 30 min",
+        f2t: "Impression de badges sur site instantan\u00e9e",
+        f2d: "Badges 100% personnalis\u00e9s imprim\u00e9s sur papier A4 standard. Aucun mat\u00e9riel sp\u00e9cial. Option impression \u00e0 domicile pour \u00e9viter toute file d\u2019attente.",
+        f2b: "3 secondes par badge \u00b7 Papier A4 ordinaire",
+        f3t: "Notifications automatiques \u00e0 chaque \u00e9tape",
+        f3d: "Confirmations d\u2019inscription, rappels J-3, J-1 et le jour J. Vos participants sont inform\u00e9s automatiquement \u00e0 chaque \u00e9tape \u2014 sans que vous touchiez quoi que ce soit.",
+        f3b: "100% automatis\u00e9 \u00b7 Arabe & Fran\u00e7ais",
+        f4t: "Statistiques & suivi en temps r\u00e9el",
+        f4d: "Taux de pr\u00e9sence, inscrits par heure, badges imprim\u00e9s, check-ins en direct. Votre tableau de bord se met \u00e0 jour en temps r\u00e9el pendant tout l\u2019\u00e9v\u00e9nement.",
+        f4b: "Tableau de bord live \u00b7 Export CSV",
+        featCta: "Demander une d\u00e9mo gratuite",
+        howTag: "Comment \u00e7a marche", howTitle: "Votre \u00e9v\u00e9nement pr\u00eat en 3 \u00e9tapes.",
+        s1t: "Cr\u00e9ez et configurez votre \u00e9v\u00e9nement",
+        s1d: "D\u00e9finissez votre formulaire d\u2019inscription, personnalisez le design de vos badges, et configurez les notifications automatiques. Tout est pr\u00eat en moins de 30 minutes.",
+        s1b: "\u23f1 30 min de configuration",
+        s2t: "G\u00e9rez les inscriptions depuis votre tableau de bord",
+        s2d: "Suivez les inscriptions en temps r\u00e9el, envoyez des confirmations automatiques, g\u00e9rez votre liste de participants et pr\u00e9parez les badges \u2014 tout depuis une seule interface.",
+        s2b: "\ud83d\udcca Suivi en temps r\u00e9el",
+        s3t: "Le jour J : accueillez sereinement vos participants",
+        s3d: "Check-in digital par QR code, impression de badges en 3 secondes, pr\u00e9sence enregistr\u00e9e en temps r\u00e9el. Vous avez tout sous contr\u00f4le \u2014 sans stress, sans file d\u2019attente.",
+        s3b: "\ud83c\udfaf Accueil en 3 secondes",
+        testTag: "T\u00e9moignages", testTitle: "Ce que disent nos clients",
+        rev1: "\"Eventzone a transform\u00e9 notre Forum Emploi. Z\u00e9ro file d\u2019attente, badges imprim\u00e9s en quelques secondes. Nos 800 participants \u00e9taient impressionn\u00e9s par le professionnalisme.\"",
+        rev1r: "Responsable RH \u00b7 Entreprise industrielle, Alger",
+        rev2: "\"Avant Eventzone, on passait 2 jours \u00e0 pr\u00e9parer les badges. Maintenant c\u2019est r\u00e9gl\u00e9 en 2 heures. Je ne reviens jamais en arri\u00e8re \u2014 gain de temps \u00e9norme.\"",
+        rev2r: "Organisatrice d\u2019\u00e9v\u00e9nements \u00b7 Oran",
+        rev3: "\"Le support en arabe et fran\u00e7ais est un vrai plus. L\u2019\u00e9quipe r\u00e9pond vite et r\u00e9sout tout. Un outil vraiment con\u00e7u pour nos besoins en Alg\u00e9rie.\"",
+        rev3r: "Coordinateur \u00b7 Institution publique, Constantine",
+        priceTag: "Tarifs", priceTitle: "Payez par \u00e9v\u00e9nement.<br>Jamais d\u2019abonnement.",
+        priceNote: "\ud83d\udca1 Tous les prix sont en DZD. Devis personnalis\u00e9 disponible sur demande sous 24h.",
+        p1type: "Essentiel", p1price: "\u00c0 partir de 10 000 DZD", p1period: "par \u00e9v\u00e9nement \u00b7 jusqu\u2019\u00e0 100 participants",
+        p1f1: "Formulaire d\u2019inscription personnalis\u00e9", p1f2: "Emails de confirmation automatiques",
+        p1f3: "Badges personnalis\u00e9s imprimables", p1f4: "Support par email", p1btn: "Demander une d\u00e9mo",
+        p2type: "Professionnel", p2price: "\u00c0 partir de 50 000 DZD", p2period: "par \u00e9v\u00e9nement \u00b7 jusqu\u2019\u00e0 500 participants",
+        p2f1: "Tout ce qui est dans Essentiel", p2f2: "Check-in digital par QR code",
+        p2f3: "Tableau de bord statistiques live", p2f4: "Impression de badges sur site incluse",
+        p2f5: "Support prioritaire r\u00e9actif", p2btn: "Demander une d\u00e9mo",
+        p3type: "Entreprise", p3price: "Sur devis", p3period: "participants illimit\u00e9s \u00b7 jusqu\u2019\u00e0 2 000 000 DZD",
+        p3f1: "Tout ce qui est dans Professionnel", p3f2: "\u00c9quipe d\u00e9di\u00e9e pr\u00e9sente sur site",
+        p3f3: "Tableau de bord enti\u00e8rement personnalis\u00e9", p3f4: "Rapport post-\u00e9v\u00e9nement d\u00e9taill\u00e9",
+        p3f5: "Account manager d\u00e9di\u00e9", p3btn: "Nous contacter",
+        faqTag: "FAQ", faqTitle: "Questions fr\u00e9quentes",
+        fq1: "Eventzone fonctionne pour les petits \u00e9v\u00e9nements ?",
+        fa1: "Oui. De 20 \u00e0 5000 participants. Nos tarifs s\u2019adaptent compl\u00e8tement \u00e0 la taille de votre \u00e9v\u00e9nement. Contactez-nous pour un devis personnalis\u00e9.",
+        fq2: "Quel mat\u00e9riel faut-il pour imprimer les badges ?",
+        fa2: "Aucun mat\u00e9riel sp\u00e9cial. Papier A4 standard et une imprimante ordinaire. L\u2019option impression \u00e0 domicile permet \u00e0 vos participants d\u2019imprimer leur badge avant l\u2019\u00e9v\u00e9nement.",
+        fq3: "La plateforme fonctionne en arabe ?",
+        fa3: "Oui. Eventzone supporte le fran\u00e7ais et l\u2019arabe int\u00e9gralement. Vos formulaires, badges et communications peuvent \u00eatre enti\u00e8rement en arabe.",
+        fq4: "Combien de temps pour configurer un \u00e9v\u00e9nement ?",
+        fa4: "30 \u00e0 60 minutes en moyenne pour un \u00e9v\u00e9nement standard. Notre \u00e9quipe peut aussi tout configurer \u00e0 votre place si vous pr\u00e9f\u00e9rez.",
+        fq5: "Y a-t-il un abonnement mensuel ou un engagement ?",
+        fa5: "Non. Vous payez uniquement par \u00e9v\u00e9nement. Aucun abonnement, aucun engagement \u00e0 long terme. Utilisez Eventzone quand vous en avez besoin.",
+        fq6: "Intervenez-vous sur site le jour de l\u2019\u00e9v\u00e9nement ?",
+        fa6: "Oui pour les formules Professionnel et Entreprise. Notre \u00e9quipe peut \u00eatre pr\u00e9sente sur site pour g\u00e9rer l\u2019accueil, le check-in et l\u2019impression de badges.",
+        ctaTag: "Passez \u00e0 l\u2019action",
+        ctaTitle: "Organisez votre prochain \u00e9v\u00e9nement<br><em>sans stress.</em>",
+        ctaSub: "Rejoignez les organisateurs qui font confiance \u00e0 Eventzone. D\u00e9mo gratuite, personnalis\u00e9e \u00e0 votre \u00e9v\u00e9nement, r\u00e9ponse garantie sous 24h.",
+        ctaBtn: "R\u00e9server ma d\u00e9mo gratuite",
+        r1a: "R\u00e9ponse en 24h", r1b: "\u00c9quipe ultra r\u00e9active",
+        r2a: "D\u00e9mo sur-mesure", r2b: "Adapt\u00e9e \u00e0 vos besoins",
+        r3a: "Sans engagement", r3b: "Libert\u00e9 totale",
+        footerDesc: "La plateforme \u00e9v\u00e9nementielle alg\u00e9rienne. De l\u2019inscription au badge en main.",
+        footerCopy: "\u00a9 2026 Eventzone Pro. Tous droits r\u00e9serv\u00e9s.",
+        fh1: "Plateforme", fl1: "Fonctionnalit\u00e9s", fl2: "Tarifs", fl3: "Demander une d\u00e9mo", fl4: "Se connecter",
+        fl5: "\ud83d\udccd Alger, Alg\u00e9rie", fh3: "L\u00e9gal", fl6: "Mentions l\u00e9gales", fl7: "Confidentialit\u00e9", fl8: "CGU",
+        chip1: "487 inscrits en live", chip2: "Badge imprim\u00e9 en 3 sec",
+        ms1: "Inscrits", ms2: "Badges imprim\u00e9s", ms3: "Pr\u00e9sence", ms4: "Accueil moyen",
+        mcap: "Capacit\u00e9 salle", mpill1: "Accueilli \u2713", mpill2: "Badge pr\u00eat",
+        mq1: "\u00e9v\u00e9nements organis\u00e9s", mq2: "badges imprim\u00e9s", mq3: "de satisfaction client",
+        mq4: "Universit\u00e9 d\u2019Alger", mq5: "Min. de la Formation", mq6: "Support arabe \u0026 fran\u00e7ais",
+        fmTitle: "Formulaire d\u2019inscription", fmF1: "Nom et pr\u00e9nom *", fmF2: "Entreprise / Organisation",
+        fmF3: "Intitul\u00e9 du poste", fmF4: "Num\u00e9ro de t\u00e9l\u00e9phone", fmBtn: "Confirmer mon inscription \u2192",
+        badgeSub: "Directeur Commercial \u00b7 Sonatrach",
+        emSubj: "\u2705 Inscription confirm\u00e9e \u2014 Forum Emploi",
+        emBody: "Bonjour Karim, votre inscription au Forum Emploi Alger 2026 est confirm\u00e9e. Votre badge vous attend \u00e0 l\u2019entr\u00e9e...",
+        emBtn: "T\u00e9l\u00e9charger mon badge \u2192",
+        smTitle: "Pr\u00e9sence en temps r\u00e9el"
+      },
+      en: {
+        navFeatures: "Features", navPricing: "Pricing", navTest: "Testimonials", navFaq: "FAQ",
+        navCta: "Book a demo",
+        heroTitle: "What all the<br>best <em>events</em><br>have in<br><span class=\"line-stroke\">common.</span>",
+        heroSub: "From online registration to badge in hand \u2014 Eventzone automates everything so you can focus on what truly matters.",
+        heroCta1: "Book my free demo", heroCta2: "See the platform",
+        trust1: "No commitment", trust2: "Response within 24h", trust3: "Arabic & French support",
+        probTag: "The Problem", probTitle: "Still organizing your events<br>the old way?",
+        pain1t: "Endless queues at check-in",
+        pain1d: "Paper-based registration creates bottlenecks and frustrates your attendees from the moment they arrive. First impression ruined.",
+        pain2t: "Data scattered between Excel and WhatsApp",
+        pain2d: "You spend hours consolidating registration lists across multiple tools before every event. High risk of errors.",
+        pain3t: "Badges printed at the last minute",
+        pain3d: "Late nights, printing errors, unprofessional image. All for a badge that could have been ready in 2 hours.",
+        painFooter: "Eventzone solves all of this \u2192",
+        featTag: "The Solution", featTitle: "One platform. Everything you need.",
+        f1t: "Online registration & custom forms",
+        f1d: "Create custom registration forms in minutes. Collect exactly what you need \u2014 no developer required.",
+        f1b: "Zero paper \u00b7 Deploy in 30 min",
+        f2t: "Instant on-site badge printing",
+        f2d: "100% custom badges printed on standard A4 paper. No special equipment. Home print option to avoid any queue.",
+        f2b: "3 seconds per badge \u00b7 Standard A4 paper",
+        f3t: "Automatic notifications at every step",
+        f3d: "Registration confirmations, D-3, D-1 and day-of reminders. Your attendees are informed automatically at every step \u2014 without you lifting a finger.",
+        f3b: "100% automated \u00b7 Arabic & French",
+        f4t: "Real-time statistics & tracking",
+        f4d: "Attendance rate, registrations per hour, badges printed, live check-ins. Your dashboard updates in real time throughout the event.",
+        f4b: "Live dashboard \u00b7 CSV export",
+        featCta: "Book a free demo",
+        howTag: "How it works", howTitle: "Your event ready in 3 steps.",
+        s1t: "Create and configure your event",
+        s1d: "Set up your registration form, customize your badge design, and configure automatic notifications. Everything is ready in under 30 minutes.",
+        s1b: "\u23f1 30 min setup",
+        s2t: "Manage registrations from your dashboard",
+        s2d: "Track registrations in real time, send automatic confirmations, manage your attendee list and prepare badges \u2014 all from one interface.",
+        s2b: "\ud83d\udcca Real-time tracking",
+        s3t: "Event day: welcome attendees with confidence",
+        s3d: "Digital QR code check-in, badge printing in 3 seconds, attendance recorded in real time. You have full control \u2014 no stress, no queues.",
+        s3b: "\ud83c\udfaf 3-second check-in",
+        testTag: "Testimonials", testTitle: "What our clients say",
+        rev1: "\"Eventzone transformed our Job Forum. Zero queues, badges printed in seconds. Our 800 attendees were impressed by the professionalism.\"",
+        rev1r: "HR Manager \u00b7 Industrial company, Algiers",
+        rev2: "\"Before Eventzone, we spent 2 days preparing badges. Now it\u2019s done in 2 hours. I\u2019m never going back \u2014 massive time savings.\"",
+        rev2r: "Event Organizer \u00b7 Oran",
+        rev3: "\"Arabic and French support is a real plus. The team responds quickly and solves everything. A tool truly designed for our needs in Algeria.\"",
+        rev3r: "Coordinator \u00b7 Public institution, Constantine",
+        priceTag: "Pricing", priceTitle: "Pay per event.<br>No subscriptions ever.",
+        priceNote: "\ud83d\udca1 All prices are in DZD. Custom quote available on request within 24h.",
+        p1type: "Essential", p1price: "Starting at 10,000 DZD", p1period: "per event \u00b7 up to 100 attendees",
+        p1f1: "Custom registration form", p1f2: "Automatic confirmation emails",
+        p1f3: "Custom printable badges", p1f4: "Email support", p1btn: "Book a demo",
+        p2type: "Professional", p2price: "Starting at 50,000 DZD", p2period: "per event \u00b7 up to 500 attendees",
+        p2f1: "Everything in Essential", p2f2: "Digital QR code check-in",
+        p2f3: "Live statistics dashboard", p2f4: "On-site badge printing included",
+        p2f5: "Priority responsive support", p2btn: "Book a demo",
+        p3type: "Enterprise", p3price: "Custom quote", p3period: "unlimited attendees \u00b7 up to 2,000,000 DZD",
+        p3f1: "Everything in Professional", p3f2: "Dedicated on-site team",
+        p3f3: "Fully customized dashboard", p3f4: "Detailed post-event report",
+        p3f5: "Dedicated account manager", p3btn: "Contact us",
+        faqTag: "FAQ", faqTitle: "Frequently asked questions",
+        fq1: "Does Eventzone work for small events?",
+        fa1: "Yes. From 20 to 5,000 attendees. Our pricing adapts fully to the size of your event. Contact us for a custom quote.",
+        fq2: "What equipment is needed to print badges?",
+        fa2: "No special equipment. Standard A4 paper and a regular printer. The home print option lets attendees print their badge before the event.",
+        fq3: "Does the platform work in Arabic?",
+        fa3: "Yes. Eventzone fully supports French and Arabic. Your forms, badges, and communications can be entirely in Arabic.",
+        fq4: "How long does it take to set up an event?",
+        fa4: "30 to 60 minutes on average for a standard event. Our team can also set everything up for you if you prefer.",
+        fq5: "Is there a monthly subscription or commitment?",
+        fa5: "No. You only pay per event. No subscription, no long-term commitment. Use Eventzone when you need it.",
+        fq6: "Do you provide on-site support on event day?",
+        fa6: "Yes, for Professional and Enterprise plans. Our team can be on-site to manage check-in, badge printing, and welcome.",
+        ctaTag: "Take action",
+        ctaTitle: "Organize your next event<br><em>stress-free.</em>",
+        ctaSub: "Join the organizers who trust Eventzone. Free demo, tailored to your event, guaranteed response within 24h.",
+        ctaBtn: "Book my free demo",
+        r1a: "24h response", r1b: "Ultra-responsive team",
+        r2a: "Custom demo", r2b: "Tailored to your needs",
+        r3a: "No commitment", r3b: "Total freedom",
+        footerDesc: "The Algerian event management platform. From registration to badge in hand.",
+        footerCopy: "\u00a9 2026 Eventzone Pro. All rights reserved.",
+        fh1: "Platform", fl1: "Features", fl2: "Pricing", fl3: "Book a demo", fl4: "Sign in",
+        fl5: "\ud83d\udccd Algiers, Algeria", fh3: "Legal", fl6: "Legal notice", fl7: "Privacy", fl8: "Terms",
+        chip1: "487 registered live", chip2: "Badge printed in 3 sec",
+        ms1: "Registered", ms2: "Badges printed", ms3: "Attendance", ms4: "Avg. check-in",
+        mcap: "Room capacity", mpill1: "Checked in \u2713", mpill2: "Badge ready",
+        mq1: "events organized", mq2: "badges printed", mq3: "client satisfaction",
+        mq4: "University of Algiers", mq5: "Min. of Training", mq6: "Arabic \u0026 French support",
+        fmTitle: "Registration form", fmF1: "Full name *", fmF2: "Company / Organization",
+        fmF3: "Job title", fmF4: "Phone number", fmBtn: "Confirm my registration \u2192",
+        badgeSub: "Sales Director \u00b7 Sonatrach",
+        emSubj: "\u2705 Registration confirmed \u2014 Job Forum",
+        emBody: "Hello Karim, your registration for the Algiers Job Forum 2026 is confirmed. Your badge awaits you at the entrance...",
+        emBtn: "Download my badge \u2192",
+        smTitle: "Real-time attendance"
+      }
+    };
+
+    function txt(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
+    function htm(id, v) { var e = document.getElementById(id); if (e) e.innerHTML = v; }
+
+    function setLang(lang) {
+      var t = TX[lang]; if (!t) return;
+      document.documentElement.lang = lang;
+      // Nav
+      var nl = document.querySelectorAll(".nav-links li a");
+      if (nl[0]) nl[0].textContent = t.navFeatures;
+      if (nl[1]) nl[1].textContent = t.navPricing;
+      if (nl[2]) nl[2].textContent = t.navTest;
+      if (nl[3]) nl[3].textContent = t.navFaq;
+      txt("nav-cta", t.navCta);
+      txt("mob-features", t.navFeatures); txt("mob-pricing", t.navPricing);
+      txt("mob-testimonials", t.navTest); txt("mob-faq", t.navFaq); txt("mob-cta", t.navCta);
+      // Hero
+      htm("t-hero-title", t.heroTitle); txt("t-hero-sub", t.heroSub);
+      txt("t-hero-cta1", t.heroCta1); txt("t-hero-cta2", t.heroCta2);
+      txt("t-trust1", t.trust1); txt("t-trust2", t.trust2); txt("t-trust3", t.trust3);
+      // Problems
+      txt("t-prob-tag", t.probTag); htm("t-prob-title", t.probTitle);
+      txt("t-pain1-t", t.pain1t); txt("t-pain1-d", t.pain1d);
+      txt("t-pain2-t", t.pain2t); txt("t-pain2-d", t.pain2d);
+      txt("t-pain3-t", t.pain3t); txt("t-pain3-d", t.pain3d);
+      txt("t-pain-footer", t.painFooter);
+      // Features
+      txt("t-feat-tag", t.featTag); txt("t-feat-title", t.featTitle);
+      txt("t-f1-t", t.f1t); txt("t-f1-d", t.f1d); txt("t-f1-b", t.f1b);
+      txt("t-f2-t", t.f2t); txt("t-f2-d", t.f2d); txt("t-f2-b", t.f2b);
+      txt("t-f3-t", t.f3t); txt("t-f3-d", t.f3d); txt("t-f3-b", t.f3b);
+      txt("t-f4-t", t.f4t); txt("t-f4-d", t.f4d); txt("t-f4-b", t.f4b);
+      txt("t-feat-cta", t.featCta);
+      // How it works
+      txt("t-how-tag", t.howTag); txt("t-how-title", t.howTitle);
+      txt("t-s1-t", t.s1t); txt("t-s1-d", t.s1d); txt("t-s1-b", t.s1b);
+      txt("t-s2-t", t.s2t); txt("t-s2-d", t.s2d); txt("t-s2-b", t.s2b);
+      txt("t-s3-t", t.s3t); txt("t-s3-d", t.s3d); txt("t-s3-b", t.s3b);
+      // Testimonials
+      txt("t-test-tag", t.testTag); txt("t-test-title", t.testTitle);
+      txt("t-rev1", t.rev1); txt("t-rev1-r", t.rev1r);
+      txt("t-rev2", t.rev2); txt("t-rev2-r", t.rev2r);
+      txt("t-rev3", t.rev3); txt("t-rev3-r", t.rev3r);
+      // Pricing cards
+      txt("t-price-tag", t.priceTag); htm("t-price-title", t.priceTitle);
+      txt("t-price-note", t.priceNote);
+      txt("t-p1-type", t.p1type); txt("t-p1-price", t.p1price); txt("t-p1-period", t.p1period);
+      txt("t-p1-f1", t.p1f1); txt("t-p1-f2", t.p1f2); txt("t-p1-f3", t.p1f3); txt("t-p1-f4", t.p1f4); txt("t-p1-btn", t.p1btn);
+      txt("t-p2-type", t.p2type); txt("t-p2-price", t.p2price); txt("t-p2-period", t.p2period);
+      txt("t-p2-f1", t.p2f1); txt("t-p2-f2", t.p2f2); txt("t-p2-f3", t.p2f3); txt("t-p2-f4", t.p2f4); txt("t-p2-f5", t.p2f5); txt("t-p2-btn", t.p2btn);
+      txt("t-p3-type", t.p3type); txt("t-p3-price", t.p3price); txt("t-p3-period", t.p3period);
+      txt("t-p3-f1", t.p3f1); txt("t-p3-f2", t.p3f2); txt("t-p3-f3", t.p3f3); txt("t-p3-f4", t.p3f4); txt("t-p3-f5", t.p3f5); txt("t-p3-btn", t.p3btn);
+      // FAQ
+      txt("t-faq-tag", t.faqTag); txt("t-faq-title", t.faqTitle);
+      txt("t-fq1", t.fq1); txt("t-fa1", t.fa1); txt("t-fq2", t.fq2); txt("t-fa2", t.fa2);
+      txt("t-fq3", t.fq3); txt("t-fa3", t.fa3); txt("t-fq4", t.fq4); txt("t-fa4", t.fa4);
+      txt("t-fq5", t.fq5); txt("t-fa5", t.fa5); txt("t-fq6", t.fq6); txt("t-fa6", t.fa6);
+      // CTA
+      txt("t-cta-tag", t.ctaTag); htm("t-cta-title", t.ctaTitle);
+      txt("t-cta-sub", t.ctaSub); txt("t-cta-btn", t.ctaBtn);
+      txt("t-r1a", t.r1a); txt("t-r1b", t.r1b);
+      txt("t-r2a", t.r2a); txt("t-r2b", t.r2b);
+      txt("t-r3a", t.r3a); txt("t-r3b", t.r3b);
+      // Footer
+      txt("t-footer-desc", t.footerDesc); txt("t-footer-copy", t.footerCopy);
+      txt("t-fh1", t.fh1); txt("t-fl1", t.fl1); txt("t-fl2", t.fl2); txt("t-fl3", t.fl3); txt("t-fl4", t.fl4);
+      txt("t-fl5", t.fl5); txt("t-fh3", t.fh3); txt("t-fl6", t.fl6); txt("t-fl7", t.fl7); txt("t-fl8", t.fl8);
+      // Hero mockup
+      txt("t-chip1", t.chip1); txt("t-chip2", t.chip2);
+      txt("t-ms1", t.ms1); txt("t-ms2", t.ms2); txt("t-ms3", t.ms3); txt("t-ms4", t.ms4);
+      txt("t-mcap", t.mcap); txt("t-mpill1", t.mpill1); txt("t-mpill2", t.mpill2);
+      // Marquee
+      txt("t-mq1a", t.mq1); txt("t-mq1b", t.mq1); txt("t-mq2a", t.mq2); txt("t-mq2b", t.mq2);
+      txt("t-mq3a", t.mq3); txt("t-mq3b", t.mq3); txt("t-mq4a", t.mq4); txt("t-mq4b", t.mq4);
+      txt("t-mq5a", t.mq5); txt("t-mq5b", t.mq5); txt("t-mq6a", t.mq6); txt("t-mq6b", t.mq6);
+      // Feature mockups
+      txt("t-fm-title", t.fmTitle); txt("t-fm-f1", t.fmF1); txt("t-fm-f2", t.fmF2);
+      txt("t-fm-f3", t.fmF3); txt("t-fm-f4", t.fmF4); txt("t-fm-btn", t.fmBtn);
+      txt("t-badge-sub", t.badgeSub);
+      txt("t-em-subj", t.emSubj); txt("t-em-body", t.emBody); txt("t-em-btn", t.emBtn);
+      txt("t-sm-title", t.smTitle);
+      // Toggle buttons → Dropdown UI
+      var flagSrcs = { en: 'https://i.imgur.com/NXtMImD.png', fr: 'https://i.imgur.com/yS9Hjy9.png' };
+      var codes = { en: 'EN', fr: 'FR' };
+      // Update selected display (now img src)
+      var sf = document.getElementById('selectedFlag');
+      var sc = document.getElementById('selectedCode');
+      var sfm = document.getElementById('selectedFlagMob');
+      var scm = document.getElementById('selectedCodeMob');
+      if (sf) sf.src = flagSrcs[lang] || '';
+      if (sc) sc.textContent = codes[lang] || '';
+      if (sfm) sfm.src = flagSrcs[lang] || '';
+      if (scm) scm.textContent = codes[lang] || '';
+      // Update active states in dropdowns
+      document.querySelectorAll(".lang-option").forEach(function(b) {
+        b.classList.toggle("active", b.getAttribute("data-lang") === lang);
+      });
+      // Close dropdowns
+      document.querySelectorAll(".lang-dropdown").forEach(function(d) { d.classList.remove("open"); });
+      try { localStorage.setItem("ez-lang", lang); } catch(e) {}
+    }
+
+    // Dropdown toggle
+    function toggleLangDropdown(variant) {
+      var id = variant === 'mob' ? 'langDropdownMob' : 'langDropdown';
+      var dd = document.getElementById(id);
+      if (dd) dd.classList.toggle('open');
+    }
+    // Close dropdown on outside click
+    document.addEventListener('click', function(e) {
+      document.querySelectorAll('.lang-dropdown').forEach(function(dd) {
+        if (!dd.contains(e.target)) dd.classList.remove('open');
+      });
+    });
+
+    try {
+      var sl = localStorage.getItem("ez-lang") || "en";
+      if (sl !== "en") setLang(sl);
+    } catch(e) {}
+
+    // TILT ANIMATION
+    var hero = document.getElementById("hero");
+    var mockup = document.querySelector(".mockup");
+    if (hero && mockup) {
+      hero.addEventListener("mousemove", function(e) {
+        var xR = (e.clientY - window.innerHeight / 2) / window.innerHeight * 15;
+        var yR = (e.clientX - window.innerWidth / 2) / window.innerWidth * -15;
+        mockup.style.transform = "rotateX(" + xR + "deg) rotateY(" + yR + "deg) translateY(-5px)";
+      });
+      hero.addEventListener("mouseleave", function() {
+        mockup.style.transform = "rotateX(0deg) rotateY(0deg) translateY(0)";
+      });
+    }
+
+    // CURSOR GLOW
+    (function() {
+      if (window.innerWidth <= 768) return;
+      var glow = document.createElement('div');
+      glow.className = 'cursor-glow';
+      document.body.appendChild(glow);
+      document.addEventListener('mousemove', function(e) {
+        glow.style.left = e.clientX + 'px';
+        glow.style.top = e.clientY + 'px';
+      });
+    })();
+  </script>
+</body>
+
+</html>
